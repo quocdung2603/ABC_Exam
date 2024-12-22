@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { shuffleArray } from '../utils/shuffle';
 import QuestionCard from '../components/QuestionCard';
 import { SampleData } from '../fakeData/data';
@@ -59,7 +58,7 @@ const QuizPage: React.FC<{ onComplete: (score: number, total: number) => void }>
         <div className="grid grid-cols-5 gap-2">
           {questions.map((_, index) => (
             <button
-              key={index}
+              key={index+0}
               onClick={() => {
                 setCurrentQuestionIndex(index);
                 setShowQuestionList(false); // Tự động đóng danh sách ở màn hình nhỏ
