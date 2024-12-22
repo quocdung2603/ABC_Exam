@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { shuffleArray } from '../utils/shuffle';
 import QuestionCard from '../components/QuestionCard';
 import { SampleData } from '../fakeData/data';
