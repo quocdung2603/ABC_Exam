@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { shuffleArray } from '../utils/shuffle';
 import QuestionCard from '../components/QuestionCard';
+import { SampleData } from '../fakeData/data';
 
 interface Question {
   id: number;
@@ -20,10 +21,8 @@ const QuizPage: React.FC<{ onComplete: (score: number, total: number) => void }>
   const [flaggedQuestions, setFlaggedQuestions] = useState<number[]>([]); // Trạng thái đánh dấu
 
   useEffect(() => {
-    axios.get('http://localhost:3001/questions').then((response) => {
-      const shuffledQuestions = shuffleArray(response.data);
-      setQuestions(shuffledQuestions);
-    });
+    const shuffledQuestions = shuffleArray(SampleData);
+    setQuestions(shuffledQuestions);
   }, []);
 
   const handleAnswer = (selectedAnswer: string) => {
