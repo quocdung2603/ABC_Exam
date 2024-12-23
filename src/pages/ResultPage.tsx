@@ -1,6 +1,7 @@
 import React from 'react';
 
 interface AnsweredQuestion {
+  id: number;
   question: string;
   correctAnswer: string;
   selectedAnswer: string | null;
@@ -41,15 +42,15 @@ const ResultPage: React.FC<ResultPageProps> = ({ results, onRetry }) => {
           <h3 className="text-xl font-bold">Các câu trả lời sai</h3>
           <ul className="mt-4 text-left space-y-4">
             {incorrectAnswers.map((result, index) => (
-              <li key={index} className="p-4 border rounded-md bg-red-100">
+              <li key={index+0} className="p-4 border rounded-md bg-red-100">
                 <p>
-                  <strong>Câu hỏi:</strong> {result.question}
+                  <strong>Câu {result.id}:</strong> {result.question}
                 </p>
                 <p>
                   <strong>Đáp án đúng:</strong> {result.correctAnswer}
                 </p>
                 <p>
-                  <strong>Đáp án của bạn:</strong> {result.selectedAnswer || 'Chưa trả lời'}
+                  <strong>Đáp án của bạn:</strong> {result.selectedAnswer ?? 'Chưa trả lời'}
                 </p>
               </li>
             ))}

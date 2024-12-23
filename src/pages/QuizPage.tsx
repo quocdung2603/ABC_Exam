@@ -10,6 +10,7 @@ interface Question {
 }
 
 interface AnsweredQuestion {
+  id: number;
   question: string;
   correctAnswer: string;
   selectedAnswer: string | null;
@@ -29,6 +30,7 @@ const QuizPage: React.FC<{ onComplete: (results: AnsweredQuestion[]) => void }> 
     setQuestions(shuffledQuestions);
     setAnswers(
       shuffledQuestions.map((q) => ({
+        id: q.id,
         question: q.question,
         correctAnswer: q.answer,
         selectedAnswer: null,
@@ -82,6 +84,7 @@ const QuizPage: React.FC<{ onComplete: (results: AnsweredQuestion[]) => void }> 
         {questions.length > 0 && (
           <>
             <QuestionCard
+              id={questions[currentQuestionIndex].id}
               question={questions[currentQuestionIndex].question}
               options={questions[currentQuestionIndex].options.map((option, idx) => `${answerLabels[idx]}. ${option}`)}
               onAnswer={(answer) => handleAnswer(answer)}

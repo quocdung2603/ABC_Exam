@@ -1,6 +1,7 @@
 import React from 'react';
 
 interface QuestionCardProps {
+  id: number;
   question: string;
   options: string[];
   selectedAnswer: string | null;
@@ -8,6 +9,7 @@ interface QuestionCardProps {
 }
 
 const QuestionCard: React.FC<QuestionCardProps> = ({
+  id,
   question,
   options,
   selectedAnswer,
@@ -15,10 +17,10 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 }) => {
   return (
     <div className="bg-white shadow-md rounded-lg p-6">
-      <h3 className="lg:text-lg text-base font-bold mb-4">{question}</h3>
+      <h3 className="lg:text-lg text-base font-bold mb-4">Câu {id}: {question}</h3>
       <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {options.map((option, index) => (
-          <li key={index}>
+          <li key={index+0}>
             <button
               onClick={() => onAnswer(option)}
               className={`w-full py-2 px-4 rounded-md lg:text-lg text-base ${
