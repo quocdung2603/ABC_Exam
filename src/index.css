@@ -121,3 +121,20 @@ button:disabled {
     font-size: 0.8rem;
   }
 }
+
+/* Màu cho đáp án */
+.bg-blue-500 {
+  background-color: #3b82f6; /* Màu xanh dương */
+}
+
+.bg-gray-300 {
+  background-color: #d1d5db; /* Màu xám */
+}
+
+.text-white {
+  color: #ffffff;
+}
+
+.text-black {
+  color: #000000;
+}

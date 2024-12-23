@@ -2,32 +2,26 @@ import React, { useState } from 'react';
 import QuizPage from './pages/QuizPage';
 import ResultPage from './pages/ResultPage';
 
+interface AnsweredQuestion {
+  question: string;
+  correctAnswer: string;
+  selectedAnswer: string | null;
+  isCorrect: boolean;
+}
+
 const App: React.FC = () => {
-  const [score, setScore] = useState<number>(0);
-  const [showResult, setShowResult] = useState<boolean>(false);
-  const [totalQuestions, setTotalQuestions] = useState<number>(0);
+  const [results, setResults] = useState<AnsweredQuestion[] | null>(null);
 
   const handleRetry = () => {
-    setScore(0);
-    setShowResult(false);
+    setResults(null); // Reset kết quả
   };
 
   return (
     <div>
-      {!showResult ? (
-        <QuizPage
-          onComplete={(finalScore, total) => {
-            setScore(finalScore);
-            setTotalQuestions(total);
-            setShowResult(true);
-          }}
-        />
+      {results ? (
+        <ResultPage results={results} onRetry={handleRetry} />
       ) : (
-        <ResultPage
-          score={score}
-          totalQuestions={totalQuestions}
-          onRetry={handleRetry}
-        />
+        <QuizPage onComplete={setResults} />
       )}
     </div>
   );

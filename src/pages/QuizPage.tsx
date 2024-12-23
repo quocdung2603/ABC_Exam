@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { shuffleArray } from '../utils/shuffle';
 import QuestionCard from '../components/QuestionCard';
 import { SampleData } from '../fakeData/data';
 
@@ -10,39 +9,56 @@ interface Question {
   answer: string;
 }
 
-const QuizPage: React.FC<{ onComplete: (score: number, total: number) => void }> = ({
+interface AnsweredQuestion {
+  question: string;
+  correctAnswer: string;
+  selectedAnswer: string | null;
+  isCorrect: boolean;
+}
+
+const QuizPage: React.FC<{ onComplete: (results: AnsweredQuestion[]) => void }> = ({
   onComplete,
 }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
-  const [score, setScore] = useState<number>(0);
-  const [answeredQuestions, setAnsweredQuestions] = useState<number[]>([]);
-  const [flaggedQuestions, setFlaggedQuestions] = useState<number[]>([]); // Trạng thái đánh dấu
+  const [answers, setAnswers] = useState<AnsweredQuestion[]>([]); // Lưu đáp án đã chọn
+  const [flaggedQuestions, setFlaggedQuestions] = useState<number[]>([]); // Lưu trạng thái câu hỏi được đặt cờ
 
   useEffect(() => {
-    const shuffledQuestions = shuffleArray(SampleData);
+    const shuffledQuestions: any[] = SampleData;
     setQuestions(shuffledQuestions);
+    setAnswers(
+      shuffledQuestions.map((q) => ({
+        question: q.question,
+        correctAnswer: q.answer,
+        selectedAnswer: null,
+        isCorrect: false,
+      }))
+    );
   }, []);
 
   const handleAnswer = (selectedAnswer: string) => {
-    if (selectedAnswer === questions[currentQuestionIndex].answer) {
-      setScore(score + 1);
-    }
-    if (!answeredQuestions.includes(currentQuestionIndex)) {
-      setAnsweredQuestions([...answeredQuestions, currentQuestionIndex]);
-    }
+    // Loại bỏ chữ cái A, B, C, D và khoảng trắng trước khi so sánh
+    const cleanSelectedAnswer = selectedAnswer.split('. ').slice(1).join('. ');
+    const updatedAnswers = [...answers];
+    updatedAnswers[currentQuestionIndex] = {
+      ...updatedAnswers[currentQuestionIndex],
+      selectedAnswer,
+      isCorrect: cleanSelectedAnswer === questions[currentQuestionIndex].answer,
+    };
+    setAnswers(updatedAnswers);
   };
 
   const toggleFlag = (index: number) => {
     if (flaggedQuestions.includes(index)) {
-      setFlaggedQuestions(flaggedQuestions.filter((i) => i !== index)); // Bỏ đánh dấu
+      setFlaggedQuestions(flaggedQuestions.filter((i) => i !== index));
     } else {
-      setFlaggedQuestions([...flaggedQuestions, index]); // Đánh dấu
+      setFlaggedQuestions([...flaggedQuestions, index]);
     }
   };
 
   const handleFinish = () => {
-    onComplete(score, questions.length);
+    onComplete(answers);
   };
 
   const goToNextQuestion = () => {
@@ -57,6 +73,8 @@ const QuizPage: React.FC<{ onComplete: (score: number, total: number) => void }>
     }
   };
 
+  const answerLabels = ['A', 'B', 'C', 'D'];
+
   return (
     <div className="flex flex-col md:flex-row h-screen">
       {/* Nội dung chi tiết câu hỏi */}
@@ -65,43 +83,40 @@ const QuizPage: React.FC<{ onComplete: (score: number, total: number) => void }>
           <>
             <QuestionCard
               question={questions[currentQuestionIndex].question}
-              options={questions[currentQuestionIndex].options}
+              options={questions[currentQuestionIndex].options.map((option, idx) => `${answerLabels[idx]}. ${option}`)}
               onAnswer={(answer) => handleAnswer(answer)}
+              selectedAnswer={answers[currentQuestionIndex]?.selectedAnswer}
             />
-            <div className='flex flex-row w-full justify-between items-center mt-4'>
-              <div className='mr-auto'>
-                <button
-                  onClick={() => toggleFlag(currentQuestionIndex)}
-                  className={`px-4 py-2 rounded-md ${flaggedQuestions.includes(currentQuestionIndex)
-                    ? 'bg-yellow-500 text-white'
-                    : 'bg-gray-300 text-black'
-                    }`}
-                >
-                  {flaggedQuestions.includes(currentQuestionIndex)
-                    ? 'Bỏ Cờ'
-                    : 'Đặt Cờ'}
-                </button>
-              </div>
-              <div className='flex flex-row ml-auto space-x-4'>
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={() => toggleFlag(currentQuestionIndex)}
+                className={`px-4 py-2 rounded-md font-medium ${flaggedQuestions.includes(currentQuestionIndex)
+                  ? 'bg-yellow-500 text-white'
+                  : 'bg-gray-300 text-black'
+                  }`}
+              >
+                {flaggedQuestions.includes(currentQuestionIndex) ? 'Bỏ cờ' : 'Đặt cờ'}
+              </button>
+              <div className="flex space-x-4">
                 <button
                   onClick={goToPreviousQuestion}
-                  className="px-4 py-2 bg-gray-300 rounded-md text-black disabled:opacity-50"
                   disabled={currentQuestionIndex === 0}
+                  className="px-4 py-2 rounded-md font-medium bg-gray-300 text-black disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Trước
+                  Câu trước
                 </button>
                 <button
                   onClick={goToNextQuestion}
-                  className="px-4 py-2 bg-gray-300 rounded-md text-black disabled:opacity-50"
                   disabled={currentQuestionIndex === questions.length - 1}
+                  className="px-4 py-2 rounded-md font-medium bg-gray-300 text-black disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Tiếp
+                  Câu kế tiếp
                 </button>
               </div>
             </div>
             <button
               onClick={handleFinish}
-              className="mt-4 w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
+              className="mt-4 w-full py-2 rounded-md font-medium bg-red-500 text-white hover:bg-red-600"
             >
               Kết thúc làm bài
             </button>
@@ -117,9 +132,12 @@ const QuizPage: React.FC<{ onComplete: (score: number, total: number) => void }>
             <button
               key={index + 0}
               onClick={() => setCurrentQuestionIndex(index)}
-              className={`p-2 rounded ${answeredQuestions.includes(index) ? 'bg-green-400' : 'bg-gray-200'
+              className={`p-2 rounded-md text-center text-white font-medium transition-all ${currentQuestionIndex === index
+                ? 'bg-blue-500'
+                : answers[index]?.selectedAnswer
+                  ? 'bg-green-500'
+                  : 'bg-gray-400'
                 } ${flaggedQuestions.includes(index) ? 'ring-2 ring-yellow-500' : ''
-                } ${currentQuestionIndex === index ? 'ring-2 ring-blue-500' : ''
                 }`}
             >
               {index + 1}
