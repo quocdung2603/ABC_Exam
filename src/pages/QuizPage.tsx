@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import QuestionCard from '../components/QuestionCard';
-import { SampleData } from '../fakeData/data';
 
 interface Question {
   id: number;
@@ -17,19 +17,19 @@ interface AnsweredQuestion {
   isCorrect: boolean;
 }
 
-const QuizPage: React.FC<{ onComplete: (results: AnsweredQuestion[]) => void }> = ({
-  onComplete,
-}) => {
-  const [questions, setQuestions] = useState<Question[]>([]);
+const QuizPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { questions: initialQuestions } = location.state as { questions: Question[] };
+
+  const questions: Question[] = initialQuestions
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [answers, setAnswers] = useState<AnsweredQuestion[]>([]); // Lưu đáp án đã chọn
   const [flaggedQuestions, setFlaggedQuestions] = useState<number[]>([]); // Lưu trạng thái câu hỏi được đặt cờ
 
   useEffect(() => {
-    const shuffledQuestions: any[] = SampleData;
-    setQuestions(shuffledQuestions);
     setAnswers(
-      shuffledQuestions.map((q) => ({
+      questions.map((q) => ({
         id: q.id,
         question: q.question,
         correctAnswer: q.answer,
@@ -37,10 +37,9 @@ const QuizPage: React.FC<{ onComplete: (results: AnsweredQuestion[]) => void }> 
         isCorrect: false,
       }))
     );
-  }, []);
+  }, [questions]);
 
   const handleAnswer = (selectedAnswer: string) => {
-    // Loại bỏ chữ cái A, B, C, D và khoảng trắng trước khi so sánh
     const cleanSelectedAnswer = selectedAnswer.split('. ').slice(1).join('. ');
     const updatedAnswers = [...answers];
     updatedAnswers[currentQuestionIndex] = {
@@ -60,7 +59,7 @@ const QuizPage: React.FC<{ onComplete: (results: AnsweredQuestion[]) => void }> 
   };
 
   const handleFinish = () => {
-    onComplete(answers);
+    navigate('/result', { state: { answers } });
   };
 
   const goToNextQuestion = () => {
@@ -86,17 +85,20 @@ const QuizPage: React.FC<{ onComplete: (results: AnsweredQuestion[]) => void }> 
             <QuestionCard
               id={questions[currentQuestionIndex].id}
               question={questions[currentQuestionIndex].question}
-              options={questions[currentQuestionIndex].options.map((option, idx) => `${answerLabels[idx]}. ${option}`)}
+              options={questions[currentQuestionIndex].options.map(
+                (option, idx) => `${answerLabels[idx]}. ${option}`
+              )}
               onAnswer={(answer) => handleAnswer(answer)}
               selectedAnswer={answers[currentQuestionIndex]?.selectedAnswer}
             />
             <div className="flex justify-between mt-4">
               <button
                 onClick={() => toggleFlag(currentQuestionIndex)}
-                className={`px-4 py-2 rounded-md font-medium ${flaggedQuestions.includes(currentQuestionIndex)
-                  ? 'bg-yellow-500 text-white'
-                  : 'bg-gray-300 text-black'
-                  }`}
+                className={`px-4 py-2 rounded-md font-medium ${
+                  flaggedQuestions.includes(currentQuestionIndex)
+                    ? 'bg-yellow-500 text-white'
+                    : 'bg-gray-300 text-black'
+                }`}
               >
                 {flaggedQuestions.includes(currentQuestionIndex) ? 'Bỏ cờ' : 'Đặt cờ'}
               </button>
@@ -133,15 +135,17 @@ const QuizPage: React.FC<{ onComplete: (results: AnsweredQuestion[]) => void }> 
         <div className="grid grid-cols-5 gap-2">
           {questions.map((_, index) => (
             <button
-              key={index + 0}
+              key={index+0}
               onClick={() => setCurrentQuestionIndex(index)}
-              className={`p-2 rounded-md text-center text-white font-medium transition-all ${currentQuestionIndex === index
-                ? 'bg-blue-500'
-                : answers[index]?.selectedAnswer
+              className={`p-2 rounded-md text-center text-white font-medium transition-all ${
+                currentQuestionIndex === index
+                  ? 'bg-blue-500'
+                  : answers[index]?.selectedAnswer
                   ? 'bg-green-500'
                   : 'bg-gray-400'
-                } ${flaggedQuestions.includes(index) ? 'ring-2 ring-yellow-500' : ''
-                }`}
+              } ${
+                flaggedQuestions.includes(index) ? 'ring-2 ring-yellow-500' : ''
+              }`}
             >
               {index + 1}
             </button>

@@ -1,30 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import QuizHome from './pages/QuizHome';
 import QuizPage from './pages/QuizPage';
 import ResultPage from './pages/ResultPage';
 
-interface AnsweredQuestion {
-  id: number;
-  question: string;
-  correctAnswer: string;
-  selectedAnswer: string | null;
-  isCorrect: boolean;
-}
-
 const App: React.FC = () => {
-  const [results, setResults] = useState<AnsweredQuestion[] | null>(null);
-
-  const handleRetry = () => {
-    setResults(null); // Reset kết quả
-  };
-
   return (
-    <div>
-      {results ? (
-        <ResultPage results={results} onRetry={handleRetry} />
-      ) : (
-        <QuizPage onComplete={setResults} />
-      )}
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<QuizHome />} />
+        <Route path="/quiz" element={<QuizPage />} />
+        <Route path="/result" element={<ResultPage />} />
+      </Routes>
+    </Router>
   );
 };
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface AnsweredQuestion {
   id: number;
@@ -8,19 +9,20 @@ interface AnsweredQuestion {
   isCorrect: boolean;
 }
 
-interface ResultPageProps {
-  results: AnsweredQuestion[];
-  onRetry: () => void;
-}
+const ResultPage: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
 
-const ResultPage: React.FC<ResultPageProps> = ({ results, onRetry }) => {
-  // Đếm số câu trả lời đúng dựa trên chữ cái đầu tiên
-  const totalCorrect = results.filter(
+  // Nhận dữ liệu từ state
+  const { answers } = location.state as { answers: AnsweredQuestion[] };
+
+  // Đếm số câu trả lời đúng
+  const totalCorrect = answers.filter(
     (r) => r.selectedAnswer?.charAt(0) === r.correctAnswer.charAt(0)
   ).length;
 
   // Lọc ra các câu trả lời sai để hiển thị
-  const incorrectAnswers = results.filter(
+  const incorrectAnswers = answers.filter(
     (r) => r.selectedAnswer?.charAt(0) !== r.correctAnswer.charAt(0)
   );
 
@@ -28,11 +30,10 @@ const ResultPage: React.FC<ResultPageProps> = ({ results, onRetry }) => {
     <div className="container mx-auto p-4 text-center">
       <h2 className="text-2xl font-bold">Kết quả làm bài</h2>
       <p className="mt-4 text-lg">
-        Bạn trả lời đúng <span className="font-bold">{totalCorrect}</span>/
-        {results.length} câu.
+        Bạn trả lời đúng <span className="font-bold">{totalCorrect}</span>/{answers.length} câu.
       </p>
       <button
-        onClick={onRetry}
+        onClick={() => navigate('/')}
         className="mt-6 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md"
       >
         Làm lại
