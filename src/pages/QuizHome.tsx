@@ -36,8 +36,8 @@ const QuizHome: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <h1 className="text-9xl font-bold text-red-500 mb-8">ABC EXAMS</h1>
-      <h1 className="text-3xl font-bold mb-8">Chọn chế độ làm bài</h1>
+      <h1 className="lg:text-9xl text-md font-bold text-red-500 mb-8">ABC EXAMS</h1>
+      <h1 className="lg:text-3xl text-md font-bold mb-8">Chọn chế độ làm bài</h1>
       <div className="flex flex-col space-y-4">
         <button
           onClick={() => fetchQuestions('all')}

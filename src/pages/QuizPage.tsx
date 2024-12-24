@@ -80,6 +80,12 @@ const QuizPage = () => {
     <div className="flex flex-col md:flex-row h-screen">
       {/* Nội dung chi tiết câu hỏi */}
       <div className="flex-1 p-4">
+        <button
+          onClick={() => navigate('/')}
+          className="px-4 py-2 rounded-md font-medium bg-gray-300 text-black disabled:opacity-50 disabled:cursor-not-allowed mb-4"
+        >
+          Quay lại
+        </button>
         {questions.length > 0 && (
           <>
             <QuestionCard
@@ -94,11 +100,10 @@ const QuizPage = () => {
             <div className="flex justify-between mt-4">
               <button
                 onClick={() => toggleFlag(currentQuestionIndex)}
-                className={`px-4 py-2 rounded-md font-medium ${
-                  flaggedQuestions.includes(currentQuestionIndex)
-                    ? 'bg-yellow-500 text-white'
-                    : 'bg-gray-300 text-black'
-                }`}
+                className={`px-4 py-2 rounded-md font-medium ${flaggedQuestions.includes(currentQuestionIndex)
+                  ? 'bg-yellow-500 text-white'
+                  : 'bg-gray-300 text-black'
+                  }`}
               >
                 {flaggedQuestions.includes(currentQuestionIndex) ? 'Bỏ cờ' : 'Đặt cờ'}
               </button>
@@ -132,20 +137,18 @@ const QuizPage = () => {
       {/* Danh sách câu hỏi */}
       <div className="w-full md:w-1/3 bg-gray-100 overflow-y-auto p-4">
         <h2 className="text-xl font-bold mb-4">Danh sách câu hỏi</h2>
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-8 gap-1">
           {questions.map((_, index) => (
             <button
-              key={index+0}
+              key={index + 0}
               onClick={() => setCurrentQuestionIndex(index)}
-              className={`p-2 rounded-md text-center text-white font-medium transition-all ${
-                currentQuestionIndex === index
-                  ? 'bg-blue-500'
-                  : answers[index]?.selectedAnswer
+              className={`p-2 rounded-md text-center text-white font-medium transition-all ${currentQuestionIndex === index
+                ? 'bg-blue-500'
+                : answers[index]?.selectedAnswer
                   ? 'bg-green-500'
                   : 'bg-gray-400'
-              } ${
-                flaggedQuestions.includes(index) ? 'ring-2 ring-yellow-500' : ''
-              }`}
+                } ${flaggedQuestions.includes(index) ? 'ring-2 ring-yellow-500' : ''
+                }`}
             >
               {index + 1}
             </button>
